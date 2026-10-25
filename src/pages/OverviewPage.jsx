@@ -75,7 +75,6 @@ export default function OverviewPage({
     .filter((holiday) => holiday.dateValue >= new Date())
     .sort((first, second) => first.dateValue - second.dateValue)[0];
 
-  // Get today's records to show in the chips
   const todayEntries = attendanceRecords.filter(r => {
     const d = new Date(r.timestamp);
     const today = new Date();
@@ -164,13 +163,13 @@ export default function OverviewPage({
             Your workday, your people, all in one place.
           </Typography>
 
-          {/* Today's Entries Chips in Banner - Now with horizontal scroll */}
+          {/* Today's Entries Chips in Banner */}
           <Box
             sx={{
               display: "flex",
               gap: 1,
               overflowX: "auto",
-              pb: 1, // padding bottom for the scrollbar
+              pb: 1,
               "&::-webkit-scrollbar": { height: 6 },
               "&::-webkit-scrollbar-track": { background: "transparent" },
               "&::-webkit-scrollbar-thumb": { background: "rgba(255,255,255,0.2)", borderRadius: 3 },
@@ -178,7 +177,7 @@ export default function OverviewPage({
           >
             {todayEntries.length > 0 ? (
               todayEntries.map((record) => {
-                const isIn = record.type === "Tap in";
+                const isIn = record.type.toLowerCase().includes("in");
                 return (
                   <Box
                     key={record.id}
@@ -310,11 +309,50 @@ export default function OverviewPage({
                 {checkedIn ? "You're checked in" : "Ready when you are"}
               </Typography>
             </Stack>
+            
+            {/* THE BUTTONS */}
             <Stack direction={{ xs: "column", sm: "row" }} spacing={0.7}>
-              <Button variant="light" icon={Clock3} disabled={checkedIn} onClick={onToggle} sx={{ whiteSpace: "nowrap", minWidth: "max-content" }}>
+              <Button 
+                variant="light" 
+                icon={Clock3} 
+                disabled={checkedIn} 
+                onClick={onToggle} 
+                sx={{ 
+                  whiteSpace: "nowrap", 
+                  minWidth: "max-content",
+                  // When Tap In is active (checkedOut), show green
+                  background: !checkedIn ? "#2e7d32" : "transparent",
+                  color: !checkedIn ? "#fff" : "rgba(255,255,255,0.4)",
+                  "& .MuiSvgIcon-root": { color: !checkedIn ? "#fff" : "rgba(255,255,255,0.4)" },
+                  "&:hover": { background: !checkedIn ? "#1b5e20" : "transparent" },
+                  "&.Mui-disabled": {
+                    background: "rgba(255,255,255,0.08)",
+                    color: "rgba(255,255,255,0.4)",
+                  }
+                }}
+              >
                 Tap in
               </Button>
-              <Button variant="light" icon={Check} disabled={!checkedIn} onClick={onToggle} sx={{ whiteSpace: "nowrap", minWidth: "max-content" }}>
+              
+              <Button 
+                variant="light" 
+                icon={Check} 
+                disabled={!checkedIn} 
+                onClick={onToggle} 
+                sx={{ 
+                  whiteSpace: "nowrap", 
+                  minWidth: "max-content",
+                  // When Tap Out is active (checkedIn), show red
+                  background: checkedIn ? "#d32f2f" : "transparent",
+                  color: checkedIn ? "#fff" : "rgba(255,255,255,0.4)",
+                  "& .MuiSvgIcon-root": { color: checkedIn ? "#fff" : "rgba(255,255,255,0.4)" },
+                  "&:hover": { background: checkedIn ? "#b71c1c" : "transparent" },
+                  "&.Mui-disabled": {
+                    background: "rgba(255,255,255,0.08)",
+                    color: "rgba(255,255,255,0.4)",
+                  }
+                }}
+              >
                 Tap out
               </Button>
             </Stack>

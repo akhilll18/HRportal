@@ -11,12 +11,22 @@ export const navigation = [
 ];
 
 export const employees = [
-  { id: "EMP001", name: "Akhil Reddy", role: "Java Developer", department: "Engineering", email: "akhil@example.com", status: "Active", joined: "Jun 12, 2025" },
-  { id: "EMP002", name: "Swetha Reddy", role: "People Operations Partner", department: "People", email: "swetha@example.com", status: "Active", joined: "Jan 03, 2024" },
+  // Engineering
+  { id: "EMP001", name: "Akhil Reddy", role: "Associate Software Engineer", department: "Engineering", email: "akhil@example.com", status: "Active", joined: "Jun 12, 2025" },
+  { id: "EMP004", name: "Kartik", role: "Software Engineer", department: "Engineering", email: "kartik@example.com", status: "On leave", joined: "Mar 21, 2025" },
+  { id: "EMP007", name: "Bindu", role: "Engineering Manager", department: "Engineering", email: "suresh@example.com", status: "Active", joined: "Jan 15, 2022" },
+  
+  // People
+  { id: "EMP002", name: "Swetha Reddy", role: "People Operations Lead", department: "People", email: "swetha@example.com", status: "Active", joined: "Jan 03, 2024" },
+  
+  // Finance
   { id: "EMP003", name: "Ashok Kumar", role: "Senior Accountant", department: "Finance", email: "ashok@example.com", status: "Active", joined: "Sep 17, 2023" },
-  { id: "EMP004", name: "kartik", role: "Software Engineer", department: "Engineering", email: "kartik@example.com", status: "On leave", joined: "Mar 21, 2025" },
-  { id: "EMP005", name: "praveen", role: "Operations Lead", department: "Operations", email: "praveen@example.com", status: "Active", joined: "Feb 14, 2024" },
-  { id: "EMP006", name: "vikram", role: "Product Designer", department: "Design", email: "vikram@example.com", status: "Active", joined: "Nov 06, 2024" },
+  
+  // Operations
+  { id: "EMP005", name: "Praveen", role: "Operations Head", department: "Operations", email: "praveen@example.com", status: "Active", joined: "Feb 14, 2024" },
+  
+  // Design
+  { id: "EMP006", name: "Vikram", role: "Product Designer", department: "Design", email: "vikram@example.com", status: "Active", joined: "Nov 06, 2024" },
 ];
 
 export const leaveRequests = [

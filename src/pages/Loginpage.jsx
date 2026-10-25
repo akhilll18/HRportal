@@ -224,7 +224,7 @@ export default function LoginPage() {
                     color: "rgba(255,255,255,0.6)",
                   }}
                 >
-                  PeopleHub · Northstar Studio workspace
+                  PeopleHub · ONAS product workspace
                 </Typography>
               </Stack>
             </Box>

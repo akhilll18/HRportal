@@ -41,36 +41,37 @@ export default function AttendancePage({
           label: ["7h 48m", "8h 24m", "8h 06m", "7h 30m", "8h 42m"][index],
         }));
 
-  // Calculate total hours worked today based on the records
-  const totalWorkMs = useMemo(() => {
-    let totalMs = 0;
-    const todayRecords = attendanceRecords.filter(r => {
+  // Filter ONLY today's records once to reuse in totals, chips, and bottom list
+  const todayEntries = useMemo(() => {
+    return attendanceRecords.filter((r) => {
       const d = new Date(r.timestamp);
       const today = new Date();
-      return d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+      return (
+        d.getDate() === today.getDate() &&
+        d.getMonth() === today.getMonth() &&
+        d.getFullYear() === today.getFullYear()
+      );
     }).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+  }, [attendanceRecords]);
 
+  // Calculate total hours worked today based on today's records
+  const totalWorkMs = useMemo(() => {
+    let totalMs = 0;
     let lastIn = null;
-    for (const record of todayRecords) {
+    for (const record of todayEntries) {
       if (record.type === "Tap in") lastIn = new Date(record.timestamp);
       else if (record.type === "Tap out" && lastIn) {
         totalMs += new Date(record.timestamp) - lastIn;
         lastIn = null;
       }
     }
+    // If currently checked in, add time up to now
     if (lastIn && checkedIn) totalMs += new Date() - lastIn;
     return totalMs;
-  }, [attendanceRecords, checkedIn]);
+  }, [todayEntries, checkedIn]);
 
   const totalHours = Math.floor(totalWorkMs / 3600000);
   const totalMins = Math.floor((totalWorkMs % 3600000) / 60000);
-
-  // Get today's records to show in the chips
-  const todayEntries = attendanceRecords.filter(r => {
-    const d = new Date(r.timestamp);
-    const today = new Date();
-    return d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
-  }).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
   return (
     <>
@@ -80,7 +81,7 @@ export default function AttendancePage({
         description="Your hours, your rhythm. Keep track of your work week."
       />
 
-      {/* ── Real-time Top Dashboard Card (Matches Screenshot) ── */}
+      {/* ── Real-time Top Dashboard Card ── */}
       <Card sx={{ p: 2.5, mb: 2, borderRadius: 2, border: "1px solid #e5eae5" }}>
         {/* Header row: Date, Total Work, Total Break, Action Buttons */}
         <Stack
@@ -138,11 +139,13 @@ export default function AttendancePage({
                 disabled={checkedIn}
                 onClick={onToggle}
                 sx={{
-                  background: "#fff",
-                  color: checkedIn ? "#a0a8a2" : "#27614e",
-                  border: "1px solid #e5eae5",
-                  "&:hover": { background: "#f5f7f4" },
-                  minWidth: 80,
+                  // ACTIVE GREEN if not checked in
+                  background: !checkedIn ? "#2e7d32" : "#f5f5f5",
+                  color: !checkedIn ? "#fff" : "#a0a8a2",
+                  border: "1px solid transparent",
+                  "&:hover": { background: !checkedIn ? "#1b5e20" : "#f5f5f5" },
+                  "& .MuiSvgIcon-root": { color: !checkedIn ? "#fff" : "#a0a8a2" },
+                  minWidth: 90,
                   fontWeight: 700,
                   boxShadow: "none"
                 }}
@@ -161,11 +164,14 @@ export default function AttendancePage({
                 disabled={!checkedIn}
                 onClick={onToggle}
                 sx={{
-                  background: "#ff4d4f",
-                  color: "#fff",
-                  "&:hover": { background: "#d9363e" },
-                  "&:disabled": { background: "#f5f5f5", color: "#bdbdbd" },
-                  minWidth: 80,
+                  // ACTIVE RED if checked in
+                  background: checkedIn ? "#d32f2f" : "#f5f5f5",
+                  color: checkedIn ? "#fff" : "#a0a8a2",
+                  border: "1px solid transparent",
+                  "&:hover": { background: checkedIn ? "#b71c1c" : "#f5f5f5" },
+                  "& .MuiSvgIcon-component": { color: checkedIn ? "#fff" : "#a0a8a2" },
+                  "& .MuiSvgIcon-root": { color: checkedIn ? "#fff" : "#a0a8a2" },
+                  minWidth: 90,
                   fontWeight: 700,
                   boxShadow: "none"
                 }}
@@ -185,11 +191,11 @@ export default function AttendancePage({
             Today's Entries
           </Typography>
 
-          {/* Chips Row - Exact match to screenshot */}
+          {/* Chips Row */}
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
             {todayEntries.length > 0 ? (
               todayEntries.map((record) => {
-                const isIn = record.type === "Tap in";
+                const isIn = record.type.toLowerCase().includes("in");
                 return (
                   <Box
                     key={record.id}
@@ -263,13 +269,14 @@ export default function AttendancePage({
 
       {/* ── Bottom details ── */}
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1.1fr 0.9fr" }, gap: 1.6 }}>
-        <Panel title="Tap history" subtitle="All tap records for your account">
-          {attendanceRecords.length ? (
+        <Panel title="Today's Tap History" subtitle="All tap records for today">
+          {/* Using todayEntries here so it only shows today's records */}
+          {todayEntries.length ? (
             <Box sx={{ maxHeight: 340, overflowY: "auto" }}>
-              {attendanceRecords.map((record) => (
+              {todayEntries.map((record) => (
                 <Stack key={record.id} direction="row" alignItems="center" spacing={1.2} sx={{ px: 2, py: 1.25, borderBottom: "1px solid #f0f2ef" }}>
-                  <Box sx={{ width: 22, height: 22, borderRadius: "50%", background: record.type === "Tap in" ? "#eaf3eb" : "#f0f2ef", display: "grid", placeItems: "center" }}>
-                    <Box sx={{ width: 7, height: 7, borderRadius: "50%", background: record.type === "Tap in" ? "#5f9668" : "#839087" }} />
+                  <Box sx={{ width: 22, height: 22, borderRadius: "50%", background: record.type.toLowerCase().includes("in") ? "#eaf3eb" : "#f7eded", display: "grid", placeItems: "center" }}>
+                    <Box sx={{ width: 7, height: 7, borderRadius: "50%", background: record.type.toLowerCase().includes("in") ? "#5f9668" : "#c62828" }} />
                   </Box>
                   <Box sx={{ flex: 1 }}>
                     <Typography sx={{ fontSize: "0.65rem", fontWeight: 600, color: "#465249" }}>{record.type}</Typography>
@@ -282,7 +289,7 @@ export default function AttendancePage({
               ))}
             </Box>
           ) : (
-            <Typography sx={{ p: 2, color: "#89948c", fontSize: "0.65rem" }}>Your tap records will appear here.</Typography>
+            <Typography sx={{ p: 2, color: "#89948c", fontSize: "0.65rem" }}>Your tap records for today will appear here.</Typography>
           )}
         </Panel>
         <Panel title="Attendance policy" subtitle="A quick reminder">

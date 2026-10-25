@@ -1,11 +1,11 @@
 export const theme = {
 	productName: "PeopleHub",
-	workspaceName: "Northstar Studio",
-	companyName: "Northstar Studio",
+	workspaceName: "ONAS product",
+	companyName: "ONAS product",
 	currentUser: {
 		name: "Akhil Reddy",
 		shortName: "Akhil",
-		role: "MuleSoft Developer",
+		role: "Associate Software Engineer",
 		employeeId: "EMP001",
 		department: "Engineering",
 		email: "akhil@example.com",

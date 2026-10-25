@@ -106,12 +106,16 @@ export default function PortalDialog({ dialog, onClose, onSubmit, departments = 
 
   // ── Profile / person view ────────────────────────────────
   if (dialog.type === "profile" || dialog.type === "person") {
+    // If it's the "profile" tab, show current user. If it's a specific "person", show their data.
     const person =
-      dialog.data || {
-        ...theme.currentUser,
-        id: theme.currentUser.employeeId,
-        status: "Active",
-      };
+      dialog.type === "person" && dialog.data
+        ? dialog.data
+        : {
+            ...theme.currentUser,
+            id: theme.currentUser.employeeId,
+            status: "Active",
+          };
+
     const initials = person.name
       .split(/\s+/)
       .slice(0, 2)
